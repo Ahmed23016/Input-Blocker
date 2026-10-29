@@ -13,12 +13,17 @@ internal sealed class HookService : IDisposable
     private Thread? thread;
     private nint[] windows = [];
     private bool ctrl, alt, shift;
+    private volatile bool unlockVisible;
+    private uint revealKey;
     public event Action? Emergency;
+    public event Action? RevealRequested;
+    public void AllowUnlockInput() => unlockVisible = true;
     public HookService() { keyboardCallback = Keyboard; mouseCallback = Mouse; }
     public void Install(nint[] handles)
     {
         if (thread != null) throw new InvalidOperationException("Hooks already installed.");
         windows = handles;
+        unlockVisible = false; revealKey = 0;
         var ready = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         thread = new Thread(() =>
         {
@@ -52,14 +57,26 @@ internal sealed class HookService : IDisposable
         if (down && ctrl && alt && data.Key == 0x7B) { Emergency?.Invoke(); return 1; }
         // Never suppress the secure-attention Delete key or the Task Manager shortcut.
         if (ctrl && alt && data.Key == 0x2E || ctrl && shift && data.Key == 0x1B) return NativeMethods.CallNextHookEx(0, code, wp, lp);
-        if ((data.Flags & 0x10) != 0) return 1; // No implicit synthetic-input bypass.
-        if (!windows.Contains(NativeMethods.GetForegroundWindow())) return 1;
-        if (data.Key is 0x5B or 0x5C || (ctrl && data.Key == 0x1B) || (alt && data.Key is 0x09 or 0x1B or 0x73 or 0x20)) return 1;
-        return NativeMethods.CallNextHookEx(0, code, wp, lp);
+        if (data.Key == revealKey && revealKey != 0)
+        {
+            if (!down) revealKey = 0;
+            return down ? 1 : NativeMethods.CallNextHookEx(0, code, wp, lp);
+        }
+        if (down && Shortcut.IsRevealChord(ctrl, shift, alt, data.Key))
+        {
+            revealKey = data.Key;
+            if (!unlockVisible) RevealRequested?.Invoke();
+            return 1;
+        }
+        bool suppress = KeyboardInputPolicy.Suppress(unlockVisible,
+            windows.Contains(NativeMethods.GetForegroundWindow()), data.Key, down,
+            (data.Flags & 0x10) != 0, ctrl, alt);
+        return suppress ? 1 : NativeMethods.CallNextHookEx(0, code, wp, lp);
     }
     private nint Mouse(int code, nint wp, nint lp)
     {
         if (code < 0) return NativeMethods.CallNextHookEx(0, code, wp, lp);
+        if (!unlockVisible) return 1;
         var data = Marshal.PtrToStructure<NativeMethods.Mouse>(lp);
         if ((data.Flags & 1) != 0) return 1;
         var target = NativeMethods.GetAncestor(NativeMethods.WindowFromPoint(data.Point), 2);

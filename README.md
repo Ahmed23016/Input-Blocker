@@ -19,7 +19,7 @@ On first launch, create and confirm a password with at least eight Unicode chara
 
 ## Everyday use
 
-Click **Block Input**, use the tray menu, or press **Ctrl + Alt + Shift + L**. Each monitor receives a borderless topmost overlay. Enter your password on the primary display and press Enter or click Unlock. Incorrect attempts clear the field. After three failures, retry delays grow up to 30 seconds. Password hashing runs off the UI thread.
+Click **Block Input**, use the tray menu, or press **Ctrl + Alt + Shift + L**. Every display goes completely black, with the cursor hidden. Press **Ctrl + Shift + Plus (+)** to reveal the password screen on the primary display; secondary displays stay black. The main +/= key and numeric keypad + are supported. Revealing the screen does not unlock input. Enter your password and press Enter or click Unlock. Incorrect attempts clear the field. After three failures, retry delays grow up to 30 seconds. Password hashing runs off the UI thread. Each new activation starts black again. **Ctrl + Alt + F12** remains the separate password-independent emergency release.
 
 Change Password requires the current password by default. Turning this requirement off explicitly permits anyone at an unlocked dashboard to replace it. Global shortcuts can use Ctrl+Alt with A–Z and optional Shift; registration conflicts are reported. The fixed recovery shortcut must be available at startup or the app refuses to start.
 

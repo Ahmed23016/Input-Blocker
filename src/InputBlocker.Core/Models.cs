@@ -28,6 +28,8 @@ public sealed class AppSettings
 }
 public static class Shortcut
 {
+    public static bool IsRevealChord(bool ctrl, bool shift, bool alt, uint key) =>
+        ctrl && shift && !alt && key is 0xBB or 0x6B;
     public static bool IsValid(uint modifiers, uint key) => (modifiers == 3 || modifiers == 7) && key is >= 0x41 and <= 0x5A;
     public static string Display(uint modifiers, uint key) => $"Ctrl + Alt + {(modifiers == 7 ? "Shift + " : "")}{(char)key}";
 }

@@ -7,6 +7,7 @@
    <TextBlock Text="Keep your desktop running. Give your keyboard and mouse a break." Foreground="{DynamicResource MutedBrush}" TextAlignment="Center" FontSize="16" Margin="0,14,0,24"/>
    <Button Content="Block Input" Command="{Binding BlockCommand}" Background="{DynamicResource AccentBrush}" Foreground="#101114" FontWeight="SemiBold" FontSize="17" Padding="60,16"/>
    <TextBlock Text="{Binding ShortcutLabel}" Foreground="{DynamicResource MutedBrush}" TextAlignment="Center" Margin="0,14,0,4"/>
+   <TextBlock Text="Screen goes black. Ctrl + Shift + Plus (+) shows unlock." Foreground="{DynamicResource MutedBrush}" TextAlignment="Center" FontSize="12" Margin="0,8,0,0"/>
   </StackPanel></Border>
   <StackPanel Grid.Row="2"><UniformGrid Columns="3"><Button Content="Change Password" Click="ChangePassword" Margin="0,0,8,0"/><Button Content="Keyboard Shortcut" Command="{Binding SettingsCommand}" Margin="0,0,8,0"/><Button Content="Auto Block" Command="{Binding SettingsCommand}"/></UniformGrid><DockPanel Margin="0,18,0,0"><Button Content="About" Click="About" DockPanel.Dock="Right"/><TextBlock Text="Casual input protection, with safe recovery.&#xA;Your Windows session stays signed in." Foreground="{DynamicResource MutedBrush}" FontSize="12" VerticalAlignment="Center"/></DockPanel></StackPanel>
  </Grid></ScrollViewer>

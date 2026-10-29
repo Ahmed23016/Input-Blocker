@@ -3,6 +3,15 @@ using Xunit;
 namespace InputBlocker.Tests;
 public class CoreTests
 {
+    [Theory]
+    [InlineData(true, true, false, 0xBB, true)]
+    [InlineData(true, true, false, 0x6B, true)]
+    [InlineData(false, true, false, 0xBB, false)]
+    [InlineData(true, false, false, 0xBB, false)]
+    [InlineData(true, true, true, 0xBB, false)]
+    [InlineData(true, true, false, 0x4C, false)]
+    public void RevealShortcutRequiresControlShiftPlus(bool ctrl, bool shift, bool alt, uint key, bool expected) =>
+        Assert.Equal(expected, Shortcut.IsRevealChord(ctrl, shift, alt, key));
     [Fact] public void PasswordsUseRandomSaltsAndUnicode()
     {
         const string password = "雪🌙pässword!";
